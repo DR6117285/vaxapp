@@ -1,0 +1,127 @@
+const mongoose = require('mongoose');
+const Vaccine = require('../models/vaccine');  // Import the Vaccine model from the vaccine.js file in the models folder
+
+mongoose.connect('mongodb://127.0.0.1:27017/vaxapp', { useNewUrlParser: true, useUnifiedTopology: true });
+
+const vaccines = [
+  {
+    name: 'HEXA',
+    manufacturer: 'GlaxoSmithKline Biologicals',
+    disease: 'Diphtheria, Tetanus, Pertussis, Hepatitis B, Poliomyelitis, Haemophilus influenzae type b',
+    sideEffects: 'Pain, redness or swelling at the injection site, mild fever',
+    additionalInformation: 'HEXA is a combined vaccine.',
+    minAge: 6,
+    maxAge: 18,
+    doses: 3,
+    minIntervalBetweenDoses: 1,
+    maxIntervalBetweenDoses: 2,
+    isLiveVaccine: false,
+    hasContraindications: false
+  },
+  {
+    name: 'ROTA',
+    manufacturer: 'Merck and Co., Inc',
+    disease: 'Rotavirus',
+    sideEffects: 'Diarrhea, vomiting, fever, abdominal pain',
+    additionalInformation: 'Rotavirus vaccine is given orally, not by injection.',
+    minAge: 2,
+    maxAge: 8,
+    doses: 2,
+    minIntervalBetweenDoses: 2,
+    maxIntervalBetweenDoses: 4,
+    isLiveVaccine: true,
+    hasContraindications: true
+  },
+  {
+    name: 'PCV',
+    manufacturer: 'Pfizer Inc',
+    disease: 'Pneumococcal Conjugate',
+    sideEffects: 'Fever, drowsiness, loss of appetite, redness or tenderness where the shot is given',
+    additionalInformation: 'The vaccine can help prevent illness and complications of pneumococcal disease.',
+    minAge: 2,
+    maxAge: 15,
+    doses: 4,
+    minIntervalBetweenDoses: 2,
+    maxIntervalBetweenDoses: 6,
+    isLiveVaccine: false,
+    hasContraindications: false
+  },
+  {
+    name: 'HEP A',
+    manufacturer: 'GlaxoSmithKline Biologicals',
+    disease: 'Hepatitis A',
+    sideEffects: 'Sore arm, mild fever',
+    additionalInformation: 'Hepatitis A vaccine is given as two shots, 6 months apart.',
+    minAge: 12,
+    maxAge: 130,
+    doses: 2,
+    minIntervalBetweenDoses: 6,
+    maxIntervalBetweenDoses: 12,
+    isLiveVaccine: false,
+    hasContraindications: false
+  },
+  {
+    name: 'MMR',
+    manufacturer: 'Merck and Co., Inc',
+    disease: 'Measles, Mumps, Rubella',
+    sideEffects: 'Mild rash, fever, swelling of glands',
+    additionalInformation: 'MMR is a live vaccine and is typically given at 12-15 months of age, with a second dose at 4-6 years.',
+    minAge: 12,
+    maxAge: 72,
+    doses: 2,
+    minIntervalBetweenDoses: 4,
+    maxIntervalBetweenDoses: 8,
+    isLiveVaccine: true,
+    hasContraindications: true
+  },
+  {
+    name: 'VARICELLA',
+    manufacturer: 'Merck and Co., Inc',
+    disease: 'Chickenpox',
+    sideEffects: 'Soreness or swelling at the site of the shot, fever',
+    additionalInformation: 'Varicella is a live vaccine, usually given at 12-15 months old and a booster at 4-6 years old.',
+    minAge: 12,
+    maxAge: 72,
+    doses: 2,
+    minIntervalBetweenDoses: 3,
+    maxIntervalBetweenDoses: 8,
+    isLiveVaccine: true,
+    hasContraindications: true
+  },
+  {
+    name: 'PENTA',
+    manufacturer: 'Sanofi Pasteur, Inc',
+    disease: 'Diphtheria, Tetanus, Pertussis, Hepatitis B, and Haemophilus influenzae type b',
+    sideEffects: 'Fever, redness or swelling at the site where the shot was given, fussiness',
+    additionalInformation: 'PENTA is given in a series of 3 shots at 2, 4, and 6 months of age.',
+    minAge: 2,
+    maxAge: 6,
+    doses: 3,
+    minIntervalBetweenDoses: 2,
+    maxIntervalBetweenDoses: 4,
+    isLiveVaccine: false,
+    hasContraindications: false
+  }
+];
+
+let promises = [];
+
+vaccines.forEach(vaccineData => {
+  const vaccine = new Vaccine(vaccineData);
+  promises.push(
+    vaccine.save()
+      .then(() => console.log(`${vaccine.name} saved`))
+      .catch(err => {
+        if (err.code === 11000) {
+          console.log(`${vaccine.name} already exists`);
+        } else {
+          console.error(err);
+        }
+      })
+  );
+});
+
+Promise.all(promises)
+  .then(() => console.log('All vaccines saved'))
+  .catch(err => console.error(err))
+  .finally(() => mongoose.connection.close());
