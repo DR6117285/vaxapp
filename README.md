@@ -1,2 +1,2 @@
 # vaxapp
-Server side code for vaccine scheduling aid
+This is the server-side code for a vaccine scheduling aid
